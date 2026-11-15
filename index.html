@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PC Mentor | Buy, fix and upgrade your PC with AI</title>
+  <meta name="description" content="PC Mentor is a free AI assistant that helps you choose PC parts, fix problems and plan upgrades. It answers in your language: English, French, Arabic or Tunisian dialect.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="PC Mentor | Buy, fix and upgrade your PC with AI">
+  <meta property="og:description" content="Free AI assistant for PC parts, fixes and upgrades. Answers in your language, with tools like a PSU calculator.">
+  <meta name="twitter:card" content="summary">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
+  <style>
+    :root { --bg:#0b1220; --bg2:#0e172b; --card:#121a2e; --line:#223055; --text:#e8eefc; --muted:#93a1c4; --accent:#3b82f6; --accent2:#22d3ee; }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 70px; }
+    body { margin: 0; background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; line-height: 1.6; }
+    a { color: #7db2ff; }
+    button, input, select { font: inherit; }
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 0 18px; }
+    section { padding: 64px 0; }
+    section.alt { background: var(--bg2); }
+    h2 { font-size: 30px; margin: 0 0 8px; }
+    .sub { color: var(--muted); margin: 0 0 28px; max-width: 640px; }
+
+    /* NAV */
+    nav { position: sticky; top: 0; z-index: 10; background: rgba(11,18,32,.85); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+    nav .wrap { display: flex; align-items: center; gap: 18px; height: 58px; }
+    .logo { font-weight: 800; font-size: 19px; flex: 1; }
+    nav a.link { color: var(--muted); text-decoration: none; font-size: 14px; }
+    nav a.link:hover { color: var(--text); }
+    .btn { background: var(--accent); color: #fff; border: 0; border-radius: 10px; padding: 11px 20px; font-weight: 600; text-decoration: none; cursor: pointer; display: inline-block; }
+    .btn.ghost { background: transparent; border: 1px solid var(--line); color: var(--text); }
+    .btn:hover { filter: brightness(1.1); }
+    @media (max-width: 720px) { nav a.link { display: none; } }
+
+    /* HERO */
+    .hero { padding: 90px 0 70px; background: radial-gradient(900px 400px at 70% -10%, rgba(59,130,246,.30), transparent 60%), radial-gradient(600px 300px at 10% 10%, rgba(34,211,238,.15), transparent 60%); }
+    .hero h1 { font-size: clamp(34px, 6vw, 58px); line-height: 1.1; margin: 0 0 16px; max-width: 760px; }
+    .hero h1 span { background: linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .hero p { color: var(--muted); font-size: 18px; max-width: 600px; }
+    .hero .cta { display: flex; gap: 12px; flex-wrap: wrap; margin: 26px 0 22px; }
+    .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+    .chip { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; font-size: 13px; color: var(--muted); }
+
+    /* CARDS */
+    .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 22px; }
+    .card h3 { margin: 6px 0 6px; font-size: 19px; }
+    .card p { color: var(--muted); margin: 0 0 14px; font-size: 15px; }
+    .icon { font-size: 30px; }
+    .card button { background: transparent; border: 1px solid var(--line); color: var(--text); border-radius: 8px; padding: 8px 14px; cursor: pointer; }
+    .card button:hover { border-color: var(--accent); }
+    .steps { counter-reset: s; }
+    .steps .card::before { counter-increment: s; content: counter(s); display: inline-flex; width: 30px; height: 30px; align-items: center; justify-content: center; border-radius: 50%; background: var(--accent); font-weight: 700; }
+
+    /* ASSISTANT */
+    .assistant { display: grid; gap: 16px; grid-template-columns: 1fr 300px; align-items: start; }
+    @media (max-width: 860px) { .assistant { grid-template-columns: 1fr; } }
+    .chatbox { background: var(--card); border: 1px solid var(--line); border-radius: 14px; display: flex; flex-direction: column; height: 560px; overflow: hidden; }
+    .chatbox .top { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--line); font-weight: 600; }
+    .chatbox .top button { background: transparent; border: 1px solid var(--line); color: var(--muted); border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+    #chat { flex: 1; overflow-y: auto; padding: 14px; }
+    .msg { margin: 8px 0; padding: 9px 13px; border-radius: 12px; max-width: 92%; overflow-x: auto; }
+    .user { background: var(--accent); margin-inline-start: auto; }
+    .bot { background: #0f1830; border: 1px solid var(--line); }
+    .bot table { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: 14px; }
+    .bot th, .bot td { border: 1px solid var(--line); padding: 5px 8px; text-align: start; }
+    .bot th { background: #182243; }
+    .shops { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+    .shops .row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 13px; }
+    .shops a { background: #182243; border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; text-decoration: none; color: var(--text); }
+    .quick { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+    .quick button { background: #0f1830; color: var(--text); border: 1px solid var(--line); border-radius: 999px; padding: 7px 13px; cursor: pointer; }
+    .quick button:hover { border-color: var(--accent); }
+    #form { display: flex; gap: 8px; padding: 10px; border-top: 1px solid var(--line); }
+    #msg { flex: 1; background: #0f1830; color: var(--text); border: 1px solid var(--line); border-radius: 10px; padding: 11px; }
+    #send { background: var(--accent); color: #fff; border: 0; border-radius: 10px; padding: 0 18px; cursor: pointer; }
+    #send:disabled { opacity: .5; cursor: not-allowed; }
+    .side { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+    .side h3 { margin: 0 0 4px; font-size: 17px; }
+    .side p { color: var(--muted); font-size: 13px; margin: 0 0 12px; }
+    label { display: block; font-size: 13px; color: var(--muted); margin: 8px 0 3px; }
+    .side input, .calc select { width: 100%; background: #0f1830; color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 8px; }
+    .side .row2 { display: flex; gap: 8px; margin-top: 12px; }
+    .side .row2 button { flex: 1; }
+    #pcstatus { font-size: 12px; color: var(--accent2); min-height: 18px; margin-top: 8px; }
+
+    /* TOOLS */
+    .calc { max-width: 520px; }
+    .result { margin-top: 16px; padding: 16px; border-radius: 12px; background: #0f1830; border: 1px solid var(--line); }
+    .result b { font-size: 30px; color: var(--accent2); }
+    .note { color: var(--muted); font-size: 13px; }
+
+    /* DETAILS */
+    details { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 18px; margin-bottom: 10px; }
+    summary { cursor: pointer; font-weight: 600; }
+    details p, details ol, details ul { color: var(--muted); margin: 10px 0 0; }
+    .gloss { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+    .gloss .card { padding: 16px; }
+    .gloss h3 { font-size: 16px; margin: 0 0 4px; }
+    .gloss p { margin: 0; font-size: 14px; }
+
+    footer { border-top: 1px solid var(--line); padding: 28px 0; color: var(--muted); font-size: 13px; text-align: center; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="logo">🖥️ PC Mentor</div>
+    <a class="link" href="#features">Features</a>
+    <a class="link" href="#assistant">Assistant</a>
+    <a class="link" href="#tools">Tools</a>
+    <a class="link" href="#guide">Guide</a>
+    <a class="link" href="#faq">FAQ</a>
+    <a class="btn" href="#assistant">Ask the AI</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>Buy, fix and upgrade your PC <span>with an AI mentor.</span></h1>
+    <p>Tell it what you need. It checks compatibility, explains simply and answers in your language. Free to use.</p>
+    <div class="cta">
+      <a class="btn" href="#assistant">Start now</a>
+      <a class="btn ghost" href="#tools">Free tools</a>
+    </div>
+    <div class="chips">
+      <span class="chip">🇹🇳 Tounsi</span><span class="chip">العربية</span><span class="chip">Français</span><span class="chip">English</span>
+    </div>
+  </div>
+</header>
+
+<section id="features">
+  <div class="wrap">
+    <h2>What can it do?</h2>
+    <p class="sub">Three jobs, one assistant. Click a card to start.</p>
+    <div class="grid">
+      <div class="card"><div class="icon">🛒</div><h3>Buy the right part</h3><p>Graphics card, RAM, SSD, power supply... with compatibility checks for your PC.</p><button data-prompt="I want to buy a PC part">Start</button></div>
+      <div class="card"><div class="icon">🩺</div><h3>Fix a problem</h3><p>Slow, crashing, no display, noisy? Get likely causes and tests, step by step.</p><button data-prompt="My PC has a problem">Start</button></div>
+      <div class="card"><div class="icon">⚡</div><h3>Upgrade smartly</h3><p>Find your bottleneck and see what to upgrade first for the biggest gain.</p><button data-prompt="How can I upgrade my PC?">Start</button></div>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="how">
+  <div class="wrap">
+    <h2>How it works</h2>
+    <p class="sub">Three simple steps.</p>
+    <div class="grid steps">
+      <div class="card"><h3>Save your PC</h3><p>Fill your specs once in the "My PC" box. They stay in your browser only.</p></div>
+      <div class="card"><h3>Ask in your language</h3><p>Write in Tounsi, Arabic, French or English. The assistant follows you.</p></div>
+      <div class="card"><h3>Check the price</h3><p>Get 3 options and buttons to check the real prices in the shops.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="assistant">
+  <div class="wrap">
+    <h2>Talk to PC Mentor</h2>
+    <p class="sub">Ask anything about your PC. Prices shown are estimates: always confirm them in the shops.</p>
+    <div class="assistant">
+      <div class="chatbox">
+        <div class="top"><span>🤖 PC Mentor</span><button id="newchat" type="button">New chat</button></div>
+        <div id="chat"></div>
+        <form id="form" autocomplete="off">
+          <input id="msg" dir="auto" maxlength="350" placeholder="Type your question... / Ekteb houni... / اكتب هنا...">
+          <button id="send" type="submit">Send</button>
+        </form>
+      </div>
+      <div class="side">
+        <h3>💾 My PC</h3>
+        <p>Optional. Saved only in your browser. The assistant uses it so it asks fewer questions.</p>
+        <label for="pc_cpu">CPU</label><input id="pc_cpu" maxlength="40" placeholder="Ryzen 5 3600">
+        <label for="pc_gpu">Graphics card</label><input id="pc_gpu" maxlength="40" placeholder="GTX 1650">
+        <label for="pc_ram">RAM</label><input id="pc_ram" maxlength="30" placeholder="16 GB DDR4">
+        <label for="pc_board">Motherboard</label><input id="pc_board" maxlength="40" placeholder="B450">
+        <label for="pc_psu">Power supply</label><input id="pc_psu" maxlength="30" placeholder="500W">
+        <label for="pc_use">Usage</label><input id="pc_use" maxlength="30" placeholder="Gaming / office">
+        <div class="row2"><button class="btn" id="pcsave" type="button">Save</button><button class="btn ghost" id="pcclear" type="button">Clear</button></div>
+        <div id="pcstatus"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="tools">
+  <div class="wrap">
+    <h2>Free tool: Power supply calculator</h2>
+    <p class="sub">How many watts do you need? Pick your parts and get a safe estimate.</p>
+    <div class="card calc">
+      <label for="c_cpu">Processor level</label>
+      <select id="c_cpu">
+        <option value="65">Entry (office, light gaming)</option>
+        <option value="105" selected>Mid-range (gaming, editing)</option>
+        <option value="170">High-end (heavy workloads)</option>
+      </select>
+      <label for="c_gpu">Graphics card level</label>
+      <select id="c_gpu">
+        <option value="0">None (integrated graphics)</option>
+        <option value="120">Entry</option>
+        <option value="200" selected>Mid-range</option>
+        <option value="300">High-end</option>
+        <option value="450">Enthusiast</option>
+      </select>
+      <label for="c_drives">Storage drives and fans</label>
+      <select id="c_drives">
+        <option value="40">Few (1 to 2 drives)</option>
+        <option value="70" selected>Normal (3 to 4 drives, several fans)</option>
+        <option value="110">Many (lots of drives, RGB, water cooling)</option>
+      </select>
+      <div class="result">Recommended power supply: <b id="c_out">650</b> W
+        <div class="note">Estimate with a safety margin. Always check the power supply size recommended by your graphics card maker.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="guide">
+  <div class="wrap">
+    <h2>Quick fixes</h2>
+    <p class="sub">Try these before anything else.</p>
+    <details><summary>🐢 My PC is slow</summary>
+      <ol><li>Press Ctrl+Shift+Esc to open Task Manager and see what uses 100% of CPU, memory or disk.</li><li>Disable useless startup apps (Startup tab).</li><li>Keep at least 15% of your disk free.</li><li>If you still use an old hard drive (HDD), an SSD is usually the biggest upgrade.</li></ol></details>
+    <details><summary>🖥️ No display on the screen</summary>
+      <ol><li>Plug the screen cable into the graphics card, not the motherboard (if you have a graphics card).</li><li>Try another cable or another screen.</li><li>Switch off, unplug, and re-seat the RAM sticks firmly.</li><li>Listen for beeps at startup: they give a hint about the problem.</li></ol></details>
+    <details><summary>🔥 My PC is hot or noisy</summary>
+      <ol><li>Switch off and unplug, then blow the dust out with compressed air (fans, filters, heatsinks).</li><li>Check that all fans spin.</li><li>Leave space around the case for air to flow.</li><li>If the PC is several years old, the thermal paste may need replacing.</li></ol></details>
+    <p class="note">Not solved? Describe the problem to the assistant above.</p>
+  </div>
+</section>
+
+<section class="alt" id="tounsi">
+  <div class="wrap">
+    <h2>🇹🇳 Tounsi corner</h2>
+    <p class="sub">El mostalahet bel dhahja bech tefhemhom mel awwel.</p>
+    <div class="gloss">
+      <div class="card"><h3>CPU (processeur)</h3><p>El 9alb mta3 el PC. Houwa elli yhseb. Kol ma ykoun a9wa, el PC yekhdem asra3.</p></div>
+      <div class="card"><h3>GPU (carte graphique)</h3><p>Elli tsawwer el image w el jeux. Mohemma barcha lil gaming w el montage vidéo.</p></div>
+      <div class="card"><h3>RAM</h3><p>El dhakira el mo2aqqata. Kol ma tkoun akbar, tnajem tfata7 barcha programmes marra wa7da.</p></div>
+      <div class="card"><h3>SSD</h3><p>Disque sari3. El PC yetfata7 w yekhdem b sor3a, a7sen barcha men HDD.</p></div>
+      <div class="card"><h3>PSU (alimentation)</h3><p>Elli ye3ti el courant lil PC. Ken dha3ifa wala rkhisa, ymken el PC yetfa wala yet3attal.</p></div>
+      <div class="card"><h3>Bottleneck</h3><p>Ki 9et3a dha3ifa tbattel el 9et3a el 9awiya. Mathalan GPU 9awiya m3a CPU dha3if.</p></div>
+      <div class="card"><h3>DDR4 / DDR5</h3><p>Noo3ein men RAM. Ma yet7attouch fil nafs el carte mère, lazem tchouf chnouwa tkhdem el tienne.</p></div>
+      <div class="card"><h3>TDP</h3><p>El 9owwa bel Watt elli ta7taj el 9et3a. Tfidek bech tehseb el alimentation.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <h2>FAQ</h2>
+    <details><summary>Is it free?</summary><p>Yes. No account and no payment.</p></details>
+    <details><summary>Are the prices real?</summary><p>No. Prices are estimates from the AI. Use the shop buttons to check the real price, and always verify before buying.</p></details>
+    <details><summary>Which languages does it speak?</summary><p>It answers in the language you write: English, French, Arabic, Tunisian dialect and more.</p></details>
+    <details><summary>Is my PC data stored?</summary><p>Your "My PC" details stay in your browser only. Only the text of your messages is sent to the AI to get an answer.</p></details>
+    <details><summary>Can the AI be wrong?</summary><p>Yes. Double-check compatibility before you buy, especially for expensive parts.</p></details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">PC Mentor. AI can make mistakes, check important information. Built with free tools.</div>
+</footer>
+
+<script>
+  // ---------- Settings ----------
+  const API_URL = "https://pmfcnnxukeqrhlhgyrfo.supabase.co/functions/v1/pc-agent";
+
+  // ---------- Chat ----------
+  const chat = document.getElementById("chat");
+  const form = document.getElementById("form");
+  const input = document.getElementById("msg");
+  const sendBtn = document.getElementById("send");
+  let history = [];
+  let busy = false;
+
+  function scrollDown() { chat.scrollTop = chat.scrollHeight; }
+
+  function addMessage(role, html, plain) {
+    const d = document.createElement("div");
+    d.className = "msg " + (role === "user" ? "user" : "bot");
+    d.dir = "auto";
+    if (html) d.innerHTML = html; else d.textContent = plain || "";
+    chat.appendChild(d);
+    scrollDown();
+    return d;
+  }
+
+  function welcome() {
+    chat.innerHTML = "";
+    history = [];
+    addMessage("bot", null, "Hi! 👋 Tell me what you need. Marhba! Ekteb chnouwa t7eb. Bonjour ! Dis-moi ce dont tu as besoin.");
+    const q = document.createElement("div");
+    q.className = "quick";
+    [
+      ["🛒 Buy a part", "I want to buy a PC part"],
+      ["🩺 Fix a problem", "My PC has a problem"],
+      ["⚡ Upgrade my PC", "How can I upgrade my PC?"]
+    ].forEach(([label, text]) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.textContent = label;
+      b.onclick = () => send(text);
+      q.appendChild(b);
+    });
+    chat.appendChild(q);
+  }
+
+  function extractShops(text) {
+    const s = text.match(/^\s*SEARCH:\s*(.+)$/mi);
+    const c = text.match(/^\s*COUNTRY:\s*(.+)$/mi);
+    const clean = text.replace(/^\s*SEARCH:.*$/mi, "").replace(/^\s*COUNTRY:.*$/mi, "").trim();
+    const models = s ? s[1].split("|").map(x => x.trim()).filter(Boolean).slice(0, 4) : [];
+    return { clean, models, country: c ? c[1].trim() : "" };
+  }
+
+  function shopsBlock(models, country) {
+    if (!models.length) return null;
+    const g = q => "https://www.google.com/search?q=" + encodeURIComponent(q);
+    const isTn = /tunis|^tn$|تونس/i.test(country);
+    const wrap = document.createElement("div");
+    wrap.className = "shops";
+    const title = document.createElement("div");
+    title.textContent = "🔎 Check the real price:";
+    wrap.appendChild(title);
+    models.forEach(m => {
+      const row = document.createElement("div");
+      row.className = "row";
+      const name = document.createElement("strong");
+      name.textContent = m;
+      row.appendChild(name);
+      const links = isTn
+        ? [["Mytek", m + " site:mytek.tn"], ["Tunisianet", m + " site:tunisianet.com.tn"], ["Scoop", m + " site:scoop.com.tn"]]
+        : [["Google", m + " price " + country]];
+      links.forEach(([label, q]) => {
+        const a = document.createElement("a");
+        a.href = g(q); a.target = "_blank"; a.rel = "noopener noreferrer"; a.textContent = label;
+        row.appendChild(a);
+      });
+      wrap.appendChild(row);
+    });
+    return wrap;
+  }
+
+  // ---------- My PC (saved in the browser only) ----------
+  const pcFields = { cpu: "pc_cpu", gpu: "pc_gpu", ram: "pc_ram", board: "pc_board", psu: "pc_psu", use: "pc_use" };
+  const pcLabels = { cpu: "CPU", gpu: "GPU", ram: "RAM", board: "Board", psu: "PSU", use: "Use" };
+
+  function readPc() {
+    const o = {};
+    for (const k in pcFields) o[k] = document.getElementById(pcFields[k]).value.trim();
+    return o;
+  }
+  function pcContext() {
+    const o = readPc();
+    const parts = Object.keys(o).filter(k => o[k]).map(k => pcLabels[k] + " " + o[k]);
+    const s = parts.join("; ").slice(0, 130);
+    return s ? "[My PC: " + s + "]\n" : "";
+  }
+  function setStatus(t) { document.getElementById("pcstatus").textContent = t; }
+  document.getElementById("pcsave").onclick = () => {
+    try { localStorage.setItem("pcmentor_pc", JSON.stringify(readPc())); setStatus("Saved ✓ The assistant will use it."); }
+    catch (e) { setStatus("Saved for this visit only."); }
+  };
+  document.getElementById("pcclear").onclick = () => {
+    for (const k in pcFields) document.getElementById(pcFields[k]).value = "";
+    try { localStorage.removeItem("pcmentor_pc"); } catch (e) {}
+    setStatus("Cleared.");
+  };
+  try {
+    const saved = JSON.parse(localStorage.getItem("pcmentor_pc") || "null");
+    if (saved) for (const k in pcFields) if (saved[k]) document.getElementById(pcFields[k]).value = saved[k];
+  } catch (e) {}
+
+  // ---------- Send ----------
+  async function send(text) {
+    if (busy) return;
+    text = (text || "").trim().slice(0, 350);
+    if (!text) return;
+    busy = true; sendBtn.disabled = true;
+    document.querySelectorAll(".quick").forEach(e => e.remove());
+    addMessage("user", null, text);
+    history.push({ role: "user", content: text });
+    const wait = addMessage("bot", null, "...");
+    try {
+      // last 9 messages always start with a user message
+      const apiMsgs = history.slice(-9).map(m => ({ role: m.role, content: m.content }));
+      apiMsgs[apiMsgs.length - 1].content = pcContext() + text;
+      const r = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: apiMsgs })
+      });
+      const d = await r.json();
+      const out = d.output || "No answer.";
+      const { clean, models, country } = extractShops(out);
+      wait.innerHTML = DOMPurify.sanitize(marked.parse(clean));
+      const block = shopsBlock(models, country);
+      if (block) wait.appendChild(block);
+      if (r.ok) history.push({ role: "assistant", content: clean }); else history.pop();
+    } catch (e) {
+      wait.textContent = "Connection error. Please try again.";
+      history.pop();
+    }
+    busy = false; sendBtn.disabled = false; scrollDown();
+  }
+
+  form.addEventListener("submit", e => { e.preventDefault(); const t = input.value; input.value = ""; send(t); });
+  document.getElementById("newchat").onclick = welcome;
+
+  // Feature cards start a conversation
+  document.querySelectorAll("[data-prompt]").forEach(b => {
+    b.addEventListener("click", () => {
+      document.getElementById("assistant").scrollIntoView({ behavior: "smooth" });
+      setTimeout(() => send(b.dataset.prompt), 400);
+    });
+  });
+  welcome();
+
+  // ---------- Power supply calculator ----------
+  function calc() {
+    const total = (+document.getElementById("c_cpu").value) + (+document.getElementById("c_gpu").value) + (+document.getElementById("c_drives").value) + 60;
+    const rec = Math.ceil((total * 1.35) / 50) * 50;
+    document.getElementById("c_out").textContent = Math.max(rec, 400);
+  }
+  ["c_cpu", "c_gpu", "c_drives"].forEach(id => document.getElementById(id).addEventListener("change", calc));
+  calc();
+</script>
+</body>
+</html>
